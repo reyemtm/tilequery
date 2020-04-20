@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TileQuery</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/1.9.1/mapbox-gl.js"
+    integrity="sha256-oREdcDBJkfllreBdZ84wfIpRWPW6P4bUMgaHnW9jAEM=" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/1.9.1/mapbox-gl.css" />
+  <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/Turf.js/5.1.6/turf.min.js'></script> -->
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/spectre.css/0.5.8/spectre.min.css'/>
+  <script src='dist/tilequery.js'></script>
+  <style>
+    html,
+    body {
+      margin: 0;
+      height: 100vh;
+    }
+
+    #map {
+      width: 67%;
+      top: 0;
+      left: 33%;
+      height: 100vh;
+    }
+
+    .mapboxgl-ctrl-group button {
+
+      display: block;
+      padding: 0;
+      outline: none;
+      border: 0 !important;
+      box-sizing: border-box;
+      cursor: pointer;
+      box-shadow: none;
+      width: 50px;
+      height: 50px;
+      border-radius: 25px;
+      background-color: whitesmoke;
+      opacity: 0.8;
+      margin: 10px;
+    }
+
+    .mapboxgl-ctrl-compass {
+      display: none !important;
+    }
+
+    .mapboxgl-ctrl-group:not(:empty) {
+      box-shadow: none;
+      background: transparent;
+    }
+
+    #sidebar {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 33%;
+      padding: 10px;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="sidebar"></div>
+  <div id="map">
+  </div>
+
+  <script>
+    /*Blank Mapbox GL Map*/
+
+    var map = new mapboxgl.Map({
+      container: 'map',
+      center: [-82.54, 39.11],
+      zoom: 14,
+      hash: true,
+      debug: 2
+    });
+    map.showTileBoundaries = true;
+
+    map.addControl(new mapboxgl.NavigationControl());
+    // map.addControl(new mapboxgl.FullscreenControl());
+
+    // fetch("/test.geojson")
+    //   .then(res => res.json())
+    //   .then(data => {
+    //     console.log(data.features.length)
+    //   })
+
+    // map.on('load', function() { // DONT NEED TO DO THIS SINCE WE ARE NOT LOADING A STYLE
+    map.addSource('test', {
+      'type': 'vector',
+      'tiles': ['http://127.0.0.1:8080/tiles/{z}/{x}/{y}.mvt'],
+      'maxzoom': 14
+    });
+
+    map.addSource("query", {
+      'type': 'geojson',
+      'data': {
+        type: 'FeatureCollection',
+        features: []
+      },
+      'generateId': true
+    })
+
+    map.addLayer({
+      'id': 'test-background',
+      'type': 'circle',
+      'source': 'test',
+      'source-layer': 'test',
+      'layout': {
+        'visibility': 'visible'
+      },
+
+      'paint': {
+        'circle-color': 'whitesmoke',
+        'circle-opacity': 0.5,
+        'circle-radius': 10
+      },
+    });
+    map.addLayer({
+      'id': 'query',
+      'type': 'circle',
+      'source': 'query',
+      'layout': {
+        'visibility': 'visible'
+      },
+      'paint': {
+        'circle-color': 'skyblue',
+        'circle-opacity': 0.9,
+        'circle-radius': 10
+      },
+    });
+    var geojson = {
+      type: "FeatureCollection",
+      features: []
+    }
+    var sidebar = document.querySelector("#sidebar")
+
+    map.on("click", function (e) {
+      tilequery({
+        point: [e.lngLat.lng, e.lngLat.lat], 
+        radius: 0.5,
+        units: 'miles',
+        tiles: 'http://127.0.0.1:8080/tiles/{z}/{x}/{y}.mvt',
+        layer: 'test', 
+        zoom: 14,
+        buffer: true
+      })
+      .then(features => {
+        map.getSource('query').setData(features);
+        sidebar.innerHTML = "";
+        for (let i = 0; i < 21; i++) {
+          if (features.features[i] && features.features[i].id) sidebar.innerHTML += features.features[i].id + ': ' + features.features[i].properties.title + '<br>'
+        };
+        console.log(features)
+      })
+
+      // THE NATIVE MAPBOX WITHIN METHOD DOES NOT QUERY TILES OUTSIDE THE VIEWPORT, IT ONLY STYLES THE TILES IN THE VIEWPORT AND TILE BUFFER
+      // var buffer = turf.buffer(turf.point([e.lngLat.lng, e.lngLat.lat]), 2000, {
+      //   units: 'feet'
+      // })
+      // // var buffered = Date.now()
+      // map.setFilter("test", ["within", buffer])
+      // // var filtered = Date.now();
+      // // console.log("buffer", buffered - timer, "\nfiltered", filtered - buffered);
+      // setTimeout(function () {
+      //   var features = map.querySourceFeatures("test", {
+      //     sourceLayer: "test"
+      //   });
+      //   console.log(features.length)
+      // })
+    })
+
+    // });
+
+    /*End add layers*/
+
+  </script>
+</body>
+
+</html>

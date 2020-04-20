@@ -1,0 +1,34 @@
+{
+  "name": "tilequery",
+  "version": "0.0.1",
+  "description": "Query remote vector tiles and return features within a bounding box or buffer.",
+  "main": "tilequery.js",
+  "scripts": {
+    "build": "parcel build tilequery.js --global tilequery --detailed-report 20 --out-dir public/dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reyemtm/tilequery.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/reyemtm/tilequery/issues"
+  },
+  "homepage": "https://github.com/reyemtm/tilequery#readme",
+  "dependencies": {
+    "@turf/turf": "^5.1.6",
+    "pbf": "^3.2.1",
+    "promisfy": "^1.2.0",
+    "request": "^2.88.2",
+    "url": "^0.11.0",
+    "util": "^0.12.2",
+    "vector-tile": "^1.3.0",
+    "xyz-affair": "^0.9.1",
+    "zlib": "^1.0.5"
+  },
+  "browserslist": [
+    "last 2 Chrome versions"
+  ]
+}
