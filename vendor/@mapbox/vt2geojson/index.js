@@ -3,11 +3,11 @@
 var vt = require('vector-tile');
 var Protobuf = require('pbf');
 var format = require('util').format;
-var fs = require('fs');
+// var fs = require('fs');
 var url = require('url');
-var zlib = require('zlib');
-// var needle = require('needle');
-var request = require('request')
+// var zlib = require('zlib');
+// var request = require('request');
+var fetch = require('node-fetch')
 
 module.exports = function(args, callback) {
 
@@ -28,68 +28,55 @@ module.exports = function(args, callback) {
     var parsed = url.parse(args.uri);
     if (parsed.protocol && (parsed.protocol === 'http:' || parsed.protocol === 'https:')) {
 
-      request.get({
-        url: args.uri,
-        // gzip: true,
-        timeout: 500,
-        encoding: null
-    }, function (err, response, body) {
-        if (err) {
-            return callback(err);
-        }
-        if (response.statusCode === 401) {
+    //   request.get({
+    //     url: args.uri,
+    //     // gzip: true,
+    //     timeout: 500,
+    //     encoding: null
+    // }, function (err, response, body) {
+      fetch(args.uri, {
+ 
+      })
+      .then(res => {
+        if (res.status === 401) {
             return callback(new Error('Invalid Token'));
         }
-        if (response.statusCode !== 200) {
-            return callback(new Error(format('Error retrieving data from %s. Server responded with code: %s', JSON.stringify(args.uri), response.statusCode)));
+        if (res.status !== 200) {
+            return callback(new Error(format('Error retrieving data from %s. Server responded with code: %s', JSON.stringify(args.uri), res.status)));
         }
+        return res.arrayBuffer()
+      })
+      .then(body => {
         readTile(args, body, callback);
-    });
-        // request.get({
-        //     url: args.uri,
-        //     // gzip: true,
-        //     encoding: null,
-        //     timeout: 500
-        // // needle.get(args.uri, {
-        // //   timeout: 500,
-        // //   compressed: true
-        // // },
-        //   function (err, response) {
-        //     if (err) {
-        //         return callback(err);
-        //     }
-        //     if (response.statusCode === 401) {
-        //         return callback(new Error('Invalid Token'));
-        //     }
-        //     if (response.statusCode !== 200) {
-        //         return callback(new Error(format('Error retrieving data from %s. Server responded with code: %s', JSON.stringify(args.uri), response.statusCode)));
-        //     }
-        //     readTile(args, response.body, callback);
-        // });
+      })
+      .catch(err => {
+        console.error(err)
+      });
     } else {
-        if (parsed.protocol && parsed.protocol === 'file:') {
-            args.uri = parsed.host + parsed.pathname;
-        }
-        fs.lstat(args.uri, function(err, stats) {
-            if (err) throw err;
-            if (stats.isFile()) {
-                fs.readFile(args.uri, function(err, data) {
-                    if (err) throw err;
-                    readTile(args, data, callback);
-                });
-            }
-        });
+        // if (parsed.protocol && parsed.protocol === 'file:') {
+        //     args.uri = parsed.host + parsed.pathname;
+        // }
+        // fs.lstat(args.uri, function(err, stats) {
+        //     if (err) throw err;
+        //     if (stats.isFile()) {
+        //         fs.readFile(args.uri, function(err, data) {
+        //             if (err) throw err;
+        //             readTile(args, data, callback);
+        //         });
+        //     }
+        // });
     }
 };
 
 function readTile(args, buffer, callback) {
-    console.log(buffer[0], buffer[1])
-    // handle zipped buffers
-    if (buffer[0] === 0x78 && buffer[1] === 0x9C) {
-        buffer = zlib.inflateSync(buffer);
-    } else if (buffer[0] === 0x1F && buffer[1] === 0x8B) {
-        buffer = zlib.gunzipSync(buffer);
-    }
+    // handle zipped buffers - HANDLED BY NODE-FETCH??
+    // if (buffer[0] && buffer[0] === 0x78 && buffer[1] === 0x9C) {
+    //     console.log("zlib")
+    //     buffer = zlib.inflateSync(buffer);
+    // } else if (buffer[0] && buffer[0] === 0x1F && buffer[1] === 0x8B) {
+    //     console.log("zlib")
+    //     buffer = zlib.gunzipSync(buffer);
+    // }
 
     var tile = new vt.VectorTile(new Protobuf(buffer));
     var layers = args.layer || Object.keys(tile.layers);

@@ -25,13 +25,14 @@ async function getFeaturesFromTiles (tileURLS, layer) {
     type: 'FeatureCollection',
     features: []
   };
-  let index = []; // VECTOR TILE FEATURES MUST HAVE A UNIQUE ID FOR THIS TO WORK
+  let index = []; // VECTOR TILE FEATURES MUST HAVE A UNIQUE ID!!!
   for (let i = 0; i < tileURLS.length; i++) {
     // console.log(tileURLS[i]);
     const uri = tileURLS[i];
     try {
       const queried = await getFeatures({uri, layer});
       queried.features.map(f => {
+        if (!f.id && f.id != 0) throw new Error("features must have a unique id at the root of the feature")
         if (f.id && index.indexOf(f.id) < 0) {
           index.push(f.id);
           geojson.features.push(f)
@@ -80,6 +81,8 @@ async function tilequery(options) {
     }
   }
 
+  //considered replacing with cheap ruler but this only takes 30 ms
+
   const bufferedPoint = buffer(pointFeature, config.radius, {units: config.units});
   const bounds = bbox(bufferedPoint);
 
@@ -88,10 +91,9 @@ async function tilequery(options) {
 
   // console.log(xyz)
 
-  const urls = createTileURLS(xyz, config.tiles);
+  const timer = Date.now()
 
-  // console.log(urls)
-  var timer = Date.now()
+  const urls = createTileURLS(xyz, config.tiles);
 
   const geojson = await getFeaturesFromTiles(urls, config.layer)
   console.log('total features found: ', geojson.features.length)
@@ -115,15 +117,5 @@ async function tilequery(options) {
     return geojson
   }
 }
-
-// tilequery({
-//   point: [-82.54, 39.11], 
-//   radius: 1,
-//   units: 'miles',
-//   tiles: 'https://tilequery.netlify.app/tiles/test/{z}/{x}/{y}.mvt',
-//   layer: 'test', 
-//   zoom: 15,
-//   buffer: true
-// })
 
 module.exports = tilequery

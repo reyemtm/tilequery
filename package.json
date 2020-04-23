@@ -1,17 +1,22 @@
 {
   "name": "tilequery",
-  "version": "0.0.1",
-  "description": "Query remote vector tiles and return features within a bounding box or buffer.",
+  "version": "0.2.0",
+  "description": "Query remote vector tiles and return point features within a bounding box or point buffer.",
   "main": "tilequery.js",
   "scripts": {
-    "build": "parcel build tilequery.js --global tilequery --detailed-report 20 --out-dir public/dist"
+    "build": "parcel build tilequery.js --global tilequery --detailed-report 20 --out-dir docs/dist",
+    "build-dev": "parcel build tilequery.js --global tilequery --detailed-report 20 --out-dir docs/dist --no-minify"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/reyemtm/tilequery.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "vector-tiles",
+    "maps",
+    "gis"
+  ],
+  "author": "Malcolm Meyer",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/reyemtm/tilequery/issues"
@@ -19,6 +24,7 @@
   "homepage": "https://github.com/reyemtm/tilequery#readme",
   "dependencies": {
     "@turf/turf": "^5.1.6",
+    "node-fetch": "^2.6.0",
     "pbf": "^3.2.1",
     "promisfy": "^1.2.0",
     "request": "^2.88.2",
@@ -30,5 +36,8 @@
   },
   "browserslist": [
     "last 2 Chrome versions"
-  ]
+  ],
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4"
+  }
 }
