@@ -1,9 +1,9 @@
 # tilequery
 Query remote vector tiles and return point features within a bounding box or point buffer.
 
-Keep in mind the margin of error per zoom level. Below is a table showing the margin of error for points queried starting at zoom level 4 compared to the original GeoJSON. Tiles were created with geojson-vt using default settings and errors were checked using Turf JS.
+## Margin of Error (ft)
 
-| TileQuery Zoom Level  | Margin of Error  (in feet)               |
+| Zoom Level  | Error               |
 |------|-----------------------|
 | 4    | 811\.6139435843482    |
 | 5    | 322\.6163624599873    |
@@ -20,3 +20,5 @@ Keep in mind the margin of error per zoom level. Below is a table showing the ma
 | 16   | 0\.15763084481808604  |
 | 17   | 0\.06828433432238892  |
 | 18   | 0\.034727085753166215 |
+
+Keep in mind the margin of error per zoom level. The table above shows the margin of error for points queried starting at zoom level 4 compared to the original GeoJSON. Tiles were created with geojson-vt using default settings and errors were checked using Turf JS.
