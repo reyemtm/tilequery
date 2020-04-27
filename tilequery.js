@@ -69,7 +69,7 @@ async function tilequery(options) {
 
   console.log(config)
 
-  if (!config || !config.point || !config.radius || !config.units || !config.tiles || !config.layer || !config.zoom) {
+  if (!config || !config.point || !config.radius || !config.units || !config.tiles || !config.layer || config.zoom === null || config.zoom === undefined) {
     throw new Error ('missing required config parameters')
   }
 
