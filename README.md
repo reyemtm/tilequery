@@ -5,6 +5,8 @@ Query remote vector tiles and return point features within a bounding box or poi
 
 https://github.com/stevage/QueryRemoteTiles#readme
 
+https://github.com/mapbox/vtquery
+
 ## Vector Tiles Approx. Margin of Error (ft)
 
 | Zoom Level  | Error               |
