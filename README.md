@@ -1,7 +1,11 @@
 # tilequery
 Query remote vector tiles and return point features within a bounding box or point buffer. The returned geojson is only as accurate as the data in the tiles, but the less tiles that need queried the faster the response, so the two factors need to be taken into account when utilizing tilequery.
 
-## Margin of Error (ft)
+## Related
+
+https://github.com/stevage/QueryRemoteTiles#readme
+
+## Vector Tiles Approx. Margin of Error (ft)
 
 | Zoom Level  | Error               |
 |------|-----------------------|
