@@ -1,7 +1,7 @@
 {
   "name": "tilequery",
-  "version": "0.2.0",
-  "description": "Query remote vector tiles and return point features within a bounding box or point buffer.",
+  "version": "0.3.0",
+  "description": "Query remote vector tiles and return point or polygon features.",
   "main": "tilequery.js",
   "scripts": {
     "build": "parcel build tilequery.js --global tilequery --detailed-report 20 --out-dir docs/dist",

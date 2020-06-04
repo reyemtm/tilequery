@@ -62,7 +62,8 @@ async function tilequery(options) {
     tiles: 'https://tilequery.netlify.app/tiles/test/{z}/{x}/{y}.mvt',
     layer: 'test', 
     zoom: 14,
-    buffer: false
+    buffer: false,
+    pointInPolygon: false
   }
 
   config = setConfig(config, options);
@@ -99,6 +100,7 @@ async function tilequery(options) {
   console.log('total features found: ', geojson.features.length)
   console.log('query execution time (seconds): ', (Date.now() - timer)/1000)
 
+  
   if (config.buffer) {
     const within = {
       type: "FeatureCollection",
@@ -113,9 +115,23 @@ async function tilequery(options) {
 
     return within
 
-  }else{
-    return geojson
   }
+  if (config.pointInPolygon) {
+
+    const polygon = {
+      type: "FeatureCollection",
+      features: []
+    }
+
+    for (let i = 0; i < geojson.features.length; i++) {
+      if (booleanWithin(pointFeature, geojson.features[i])) {
+        polygon.features.push(geojson.features[i])
+      }
+    }
+    console.log("polygon features found:", polygon.features.length)
+    return polygon
+  }
+  return geojson
 }
 
 module.exports = tilequery
