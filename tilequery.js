@@ -63,12 +63,13 @@ async function tilequery(options) {
     layer: 'test', 
     zoom: 14,
     buffer: false,
-    pointInPolygon: false
+    pointInPolygon: false,
+    logger: false
   }
 
   config = setConfig(config, options);
 
-  console.log(config)
+  if (config.logger) console.log(config)
 
   if (!config || !config.point || !config.radius || !config.units || !config.tiles || !config.layer || config.zoom === null || config.zoom === undefined) {
     throw new Error ('missing required config parameters')
@@ -97,8 +98,10 @@ async function tilequery(options) {
   const urls = createTileURLS(xyz, config.tiles);
 
   const geojson = await getFeaturesFromTiles(urls, config.layer)
-  console.log('total features found: ', geojson.features.length)
-  console.log('query execution time (seconds): ', (Date.now() - timer)/1000)
+  if (config.logger) {
+    console.log('total features found: ', geojson.features.length)
+    console.log('query execution time (seconds): ', (Date.now() - timer)/1000)
+  }
 
   
   if (config.buffer) {
@@ -111,7 +114,7 @@ async function tilequery(options) {
       if (booleanWithin(geojson.features[i], bufferedPoint)) within.features.push(geojson.features[i])
     }
 
-    console.log("features returned within buffer: ", within.features.length)
+    if (config.logger) console.log("features returned within buffer: ", within.features.length)
 
     return within
 
@@ -128,7 +131,7 @@ async function tilequery(options) {
         polygon.features.push(geojson.features[i])
       }
     }
-    console.log("polygon features found:", polygon.features.length)
+    if (config.logger) console.log("polygon features found:", polygon.features.length)
     return polygon
   }
   return geojson

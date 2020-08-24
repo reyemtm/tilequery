@@ -7,7 +7,11 @@ var format = require('util').format;
 var url = require('url');
 // var zlib = require('zlib');
 // var request = require('request');
-var fetch = require('node-fetch')
+if (!window && !window.fetch) {
+  var fetch = require('node-fetch')
+}else{
+  fetch = window.fetch
+}
 
 module.exports = function(args, callback) {
 
@@ -35,7 +39,7 @@ module.exports = function(args, callback) {
     //     encoding: null
     // }, function (err, response, body) {
       fetch(args.uri, {
- 
+        cache: "force-cache"
       })
       .then(res => {
         if (res.status === 401) {
