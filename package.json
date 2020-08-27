@@ -1,6 +1,6 @@
 {
   "name": "tilequery",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Query remote vector tiles and return point or polygon features.",
   "main": "tilequery.js",
   "scripts": {

@@ -7,11 +7,7 @@ var format = require('util').format;
 var url = require('url');
 // var zlib = require('zlib');
 // var request = require('request');
-if (!window && !window.fetch) {
-  var fetch = require('node-fetch')
-}else{
-  fetch = window.fetch
-}
+var fetch = require("node-fetch")
 
 module.exports = function(args, callback) {
 

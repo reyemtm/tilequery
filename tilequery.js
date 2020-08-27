@@ -1,5 +1,5 @@
 const getXYZ = require("xyz-affair");
-const {bbox, buffer, booleanWithin} = require('@turf/turf');
+const {bbox, circle, booleanWithin} = require('@turf/turf');
 const {promisfy} = require('promisfy');
 const vt2geojson = promisfy(require('./vendor/@mapbox/vt2geojson/index.js'))
 
@@ -85,7 +85,8 @@ async function tilequery(options) {
 
   //considered replacing with cheap ruler but this only takes 30 ms
 
-  const bufferedPoint = buffer(pointFeature, config.radius, {units: config.units});
+  // const bufferedPoint = buffer(pointFeature, config.radius, {units: config.units});
+  const bufferedPoint = circle(config.point, config.radius, {units: config.units, steps: 500});
   const bounds = bbox(bufferedPoint);
 
   // console.log(bbox)
