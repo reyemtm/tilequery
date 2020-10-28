@@ -4,7 +4,7 @@ Query remote vector tiles and return point features within a bounding box or poi
 A pre-built version is available in `docs/dist` and can be used directly in the browser with the global variable `tilequery`.
 
 ## Version Notes
-0.3.2 - Replaced ``turf.buffer()`` with ``turf.circle`` due to distance errors in ``turf.buffer``
+0.3.2 - Replaced ``turf.buffer()`` with ``turf.circle()`` due to distance errors in ``turf.buffer()``
 
 ## Related
 
