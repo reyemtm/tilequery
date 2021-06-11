@@ -1,7 +1,13 @@
 const getXYZ = require("xyz-affair");
 const {bbox, circle, booleanWithin} = require('@turf/turf');
 const {promisfy} = require('promisfy');
-const vt2geojson = promisfy(require('./vendor/@mapbox/vt2geojson/index.js'))
+const vt2geojson = promisfy(require('./vendor/@mapbox/vt2geojson/index.js'));
+
+// import { getXYZ } from "xyz-affair"
+// import {bbox, circle, booleanWithin} from '@turf/turf';
+// import * as promisfy from 'promisfy';
+// import * as vt2geojsonO from './vendor/@mapbox/vt2geojson/index.js'
+// const vt2geojson = promisfy(vt2geojsonO)
 
 function createTileURLS (obj, tiles) {
   return obj.reduce((i,o) => {
@@ -48,7 +54,7 @@ async function getFeaturesFromTiles (tileURLS, layer) {
   return geojson
 }
 
-setConfig = (config, userConfig) => { 
+const setConfig = (config, userConfig) => { 
   for (let i in userConfig) config[i] = userConfig[i];
   return userConfig;
 }

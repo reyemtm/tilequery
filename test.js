@@ -1,5 +1,8 @@
 const tilequery = require("./tilequery.js");
 
+//Using imports
+// import {tilequery} from "./tilequery.js"
+
 (async function test() {
   const now = Date.now()
   const features = await tilequery({
@@ -15,4 +18,3 @@ const tilequery = require("./tilequery.js");
   console.log("timer:", Date.now() - now, "ms")
   console.log("features found:", features.features.length)
 })()
-
