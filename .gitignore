@@ -1,4 +1,7 @@
 test/
+.parcel-cache
+.cache
+local.js
 
 # Logs
 logs
