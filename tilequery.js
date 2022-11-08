@@ -64,14 +64,14 @@ async function getFeaturesFromTiles (tileURLS, layer, field) {
   return geojson
 }
 
-const setConfig = (config, userConfig) => { 
-  for (let i in userConfig) config[i] = userConfig[i];
-  return userConfig;
-}
+// const setConfig = (config, userConfig) => { 
+//   for (let i in userConfig) config[i] = userConfig[i];
+//   return userConfig;
+// }
 
 async function tilequery(options) {
   
-  let config = {
+  const config = Object.assign({
     point: [-82.54, 39.11], 
     radius: 1,
     units: 'miles',
@@ -81,9 +81,9 @@ async function tilequery(options) {
     buffer: false,
     pointInPolygon: false,
     logger: false
-  }
+  },options)
 
-  config = setConfig(config, options);
+  // config = setConfig(config, options);
 
   if (config.logger) console.log(config)
 
@@ -95,17 +95,18 @@ async function tilequery(options) {
     "type": "Feature",
     "geometry": {
         "type": "Point",
-        "coordinates": config.point
+        "coordinates": config.point || [0,0]
     }
   }
+  // console.log(pointFeature)
 
-  //considered replacing with cheap ruler but this only takes 30 ms
   const bufferedPoint = buffer(pointFeature, config.radius, {units: config.units});
+  // console.log(bufferedPoint)
+
   const bounds = config.bounds ? config.bounds : bbox(circle(config.point, config.radius, {units: config.units, steps: 500}));
+  // console.log(bounds)
 
-  // console.log(bbox)
   const xyz = getXYZ([ [bounds[0],bounds[1]], [bounds[2],bounds[3]] ], config.zoom);
-
   // console.log(xyz)
 
   const timer = Date.now()
