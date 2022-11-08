@@ -1,7 +1,8 @@
 # tilequery
+
 Query remote vector tiles and return point features within a bounding box or point buffer. The returned geojson is only as accurate as the data in the tiles, but the less tiles that need queried the faster the response, so the two factors need to be taken into account when utilizing tilequery.
 
-Polygons and lines will be returned if quiried but cut at the tile boundaries. The full list of attributes will be returned however.
+Polygons and lines will be returned if queried but cut at the tile boundaries. The full list of attributes will be returned however.
 
 A pre-built version is available in `docs/dist` and can be used directly in the browser with the global variable `tilequery`. For node, simply use `const tilequery = require("tilequery")`.
 
@@ -51,6 +52,8 @@ Keep in mind the margin of error per zoom level. The table below shows the margi
 ---
 
 ### Version Notes
+
+- 0.5.0 - removed requirement of id field
 - 0.4.0 - *Help wanted to convert to ES6.*
 - 0.3.2 - Replaced ``turf.buffer()`` with ``turf.circle()`` due to distance errors in ``turf.buffer()``
 

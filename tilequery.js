@@ -1,5 +1,5 @@
 const getXYZ = require("xyz-affair");
-const {bbox, circle, booleanWithin} = require('@turf/turf');
+const {bbox, circle, booleanWithin, buffer} = require('@turf/turf');
 const {promisfy} = require('promisfy');
 const vt2geojson = promisfy(require('./vendor/@mapbox/vt2geojson/index.js'));
 
@@ -26,24 +26,34 @@ async function getFeatures(options) {
   return query
 }
 
-async function getFeaturesFromTiles (tileURLS, layer) {
+async function getFeaturesFromTiles (tileURLS, layer, field) {
+  if (!field) console.log("warning! no id field specified - features will be duplicated")
   let geojson = {
     type: 'FeatureCollection',
     features: []
   };
   let index = []; // VECTOR TILE FEATURES MUST HAVE A UNIQUE ID!!!
+  const idField = field ? field : "id"
   for (let i = 0; i < tileURLS.length; i++) {
     // console.log(tileURLS[i]);
     const uri = tileURLS[i];
     try {
       const queried = await getFeatures({uri, layer});
-      queried.features.map(f => {
-        if (!f.id && f.id != 0) throw new Error("features must have a unique id at the root of the feature")
-        if (f.id && index.indexOf(f.id) < 0) {
-          index.push(f.id);
+      // console.log(queried.features.length)
+      // process.exit()
+      for (let i = 0; i < queried.features.length; i++) {
+        const f = queried.features[i]
+        if (idField === "id" && !f[idField] && f[idField] !== 0) {
           geojson.features.push(f)
+        }else{
+          const id = idField === "id" ? f.id : f.properties[idField]
+          if (id && index.indexOf(id) < 0) {
+            index.push(id);
+            geojson.features.push(f)
+          };
         }
-      })
+        // console.log(geojson.features.length)
+      }
     }
     catch (e) {
       //IGNORE ERRORS
@@ -77,9 +87,9 @@ async function tilequery(options) {
 
   if (config.logger) console.log(config)
 
-  if (!config || !config.point || !config.radius || !config.units || !config.tiles || !config.layer || config.zoom === null || config.zoom === undefined) {
-    throw new Error ('missing required config parameters')
-  }
+  // if (!config || !config.point || !config.radius || !config.units || !config.tiles || !config.layer || config.zoom === null || config.zoom === undefined) {
+  //   throw new Error ('missing required config parameters')
+  // }
 
   const pointFeature = {
     "type": "Feature",
@@ -90,10 +100,8 @@ async function tilequery(options) {
   }
 
   //considered replacing with cheap ruler but this only takes 30 ms
-
-  // const bufferedPoint = buffer(pointFeature, config.radius, {units: config.units});
-  const bufferedPoint = circle(config.point, config.radius, {units: config.units, steps: 500});
-  const bounds = bbox(bufferedPoint);
+  const bufferedPoint = buffer(pointFeature, config.radius, {units: config.units});
+  const bounds = config.bounds ? config.bounds : bbox(circle(config.point, config.radius, {units: config.units, steps: 500}));
 
   // console.log(bbox)
   const xyz = getXYZ([ [bounds[0],bounds[1]], [bounds[2],bounds[3]] ], config.zoom);
@@ -104,13 +112,13 @@ async function tilequery(options) {
 
   const urls = createTileURLS(xyz, config.tiles);
 
-  const geojson = await getFeaturesFromTiles(urls, config.layer)
+  const geojson = await getFeaturesFromTiles(urls, config.layer, config.field);
+  
   if (config.logger) {
     console.log('total features found: ', geojson.features.length)
     console.log('query execution time (seconds): ', (Date.now() - timer)/1000)
   }
 
-  
   if (config.buffer) {
     const within = {
       type: "FeatureCollection",

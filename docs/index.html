@@ -123,11 +123,17 @@
       'id': 'query',
       'type': 'circle',
       'source': 'query',
+      // "source-layer": "test",
       'layout': {
         'visibility': 'visible'
       },
       'paint': {
-        'circle-color': 'skyblue',
+        // 'circle-color': ["case", 
+        //   ["==", ["feature-state", "highlighted"], true],
+        //   "red",
+        //   'transparent'
+        // ],
+        "circle-color": "red",
         'circle-opacity': 0.9,
         'circle-radius': 10
       },
@@ -138,23 +144,34 @@
     }
     var sidebar = document.querySelector("#sidebar")
 
-    map.on("click", function (e) {
+
+    const ids = []
+
+    // map.on("click", (e) => console.log(map.queryRenderedFeatures(e.point)))
+
+    map.on("mousemove", function (e) {
+      // ids.forEach(id => map.removeFeatureState({source: "test", sourceLayer: "test", id: id}));
       tilequery({
         point: [e.lngLat.lng, e.lngLat.lat], 
-        radius: 0.5,
+        radius: 0.1,
         units: 'miles',
         tiles: 'https://reyemtm.github.io/tilequery/tiles/{z}/{x}/{y}.mvt',
         layer: 'test', 
         zoom: 14,
         buffer: true
       })
-      .then(features => {
-        map.getSource('query').setData(features);
+      .then(result => {
+        ids.length = 0
+        map.getSource('query').setData(result);
+        // result.features.forEach(f => {
+        //   // ids.push(f.id)
+        //   map.setFeatureState({source: "test", sourceLayer: "test", id: f.id}, {highlighted: true})
+        // })
         sidebar.innerHTML = "";
         for (let i = 0; i < 21; i++) {
-          if (features.features[i] && features.features[i].id) sidebar.innerHTML += features.features[i].id + ': ' + features.features[i].properties.title + '<br>'
+          if (result.features[i] && result.features[i].id) sidebar.innerHTML += result.features[i].id + ': ' + result.features[i].properties.title + '<br>'
         };
-        console.log(features)
+        // console.log(result)
       })
 
       // THE NATIVE MAPBOX WITHIN METHOD DOES NOT QUERY TILES OUTSIDE THE VIEWPORT, IT ONLY STYLES THE TILES IN THE VIEWPORT AND TILE BUFFER

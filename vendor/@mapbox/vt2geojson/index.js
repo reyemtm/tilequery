@@ -88,6 +88,7 @@ function readTile(args, buffer, callback) {
 
   layers.forEach(function (layerID) {
     var layer = tile.layers[layerID];
+
     if (layer) {
       for (var i = 0; i < layer.length; i++) {
         try {
