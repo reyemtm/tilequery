@@ -56,7 +56,7 @@ async function getFeaturesFromTiles (tileURLS, layer, field) {
       }
     }
     catch (error) {
-      geojson["error"] = e
+      geojson["error"] = error
     }
   }
   return geojson
