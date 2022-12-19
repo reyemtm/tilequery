@@ -55,10 +55,8 @@ async function getFeaturesFromTiles (tileURLS, layer, field) {
         // console.log(geojson.features.length)
       }
     }
-    catch (e) {
-      //IGNORE ERRORS
-      // console.error(e);
-      // process.exit(0)
+    catch (error) {
+      geojson["error"] = e
     }
   }
   return geojson
